@@ -38,7 +38,7 @@ const questions = [
   { id: 34, category: "Your SmartCrick Journey", question: "Last one — what word best describes the cricketer you want to become?", options: ["Fearless", "Consistent", "Intelligent", "Unstoppable"] },
 ];
 
-// --- ICONS ---
+// --- ICONS & HELPERS ---
 const SpeakerIcon = ({ muted }) => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B9080" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
@@ -50,121 +50,83 @@ const SpeakerIcon = ({ muted }) => (
   </svg>
 );
 
-const CheckIcon = ({ size = 10, strokeW = 3, color = "white" }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeW} strokeLinecap="round" strokeLinejoin="round">
+const CheckIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
 
-const ChevronLeft = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="15 18 9 12 15 6" />
-  </svg>
-);
-
-const ChevronRight = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6" />
-  </svg>
-);
-
-// --- ONBOARDING PAGE ---
+// --- MAIN ONBOARDING PAGE ---
 const LOGO_URL = "https://ucarecdn.com/524955bb-11c6-4b20-a6cf-974403ad7456/-/format/auto/";
 
-function OnboardingPage() {
+const OnboardingPage = () => {
   const [phase, setPhase] = useState("welcome");
   const [qIndex, setQIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [show, setShow] = useState(true);
   const [muted, setMuted] = useState(true);
-  const [musicOn, setMusicOn] = useState(false);
   const audioRef = useRef(null);
 
-  // 1. Persistence Logic: Load from LocalStorage on mount
+  // Persistence: Load progress
   useEffect(() => {
-    const savedAnswers = localStorage.getItem("smartcrick_answers");
-    const savedIndex = localStorage.getItem("smartcrick_index");
-    
-    if (savedAnswers) setAnswers(JSON.parse(savedAnswers));
-    if (savedIndex) {
-      const idx = parseInt(savedIndex, 10);
+    const saved = localStorage.getItem("sc_progress");
+    if (saved) {
+      const { idx, ans } = JSON.parse(saved);
       setQIndex(idx);
-      // If they had already started, skip the welcome screen
+      setAnswers(ans);
       if (idx > 0) setPhase("quiz");
     }
-
-    // Audio Setup
-    const a = new Audio("/background.mp3");
-    a.loop = true;
-    a.volume = 0.15;
-    audioRef.current = a;
-
-    return () => {
-      if (audioRef.current) audioRef.current.pause();
-    };
+    // Preload audio
+    audioRef.current = new Audio("/background.mp3");
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.15;
+    return () => audioRef.current?.pause();
   }, []);
 
-  // 2. Persistence Logic: Save to LocalStorage whenever state changes
+  // Persistence: Save progress
   useEffect(() => {
-    localStorage.setItem("smartcrick_answers", JSON.stringify(answers));
-    localStorage.setItem("smartcrick_index", qIndex.toString());
-  }, [answers, qIndex]);
+    localStorage.setItem("sc_progress", JSON.stringify({ idx: qIndex, ans: answers }));
+  }, [qIndex, answers]);
 
-  const playMusic = useCallback(() => {
-    if (!audioRef.current || musicOn) return;
-    audioRef.current.play().then(() => {
-      setMusicOn(true);
-      setMuted(false);
-    }).catch(() => {});
-  }, [musicOn]);
-
-  const toggleMute = useCallback(() => {
+  const toggleMute = () => {
     if (!audioRef.current) return;
     if (muted) {
-      if (!musicOn) playMusic();
+      audioRef.current.play().catch(() => {});
       audioRef.current.volume = 0.15;
-      setMuted(false);
     } else {
       audioRef.current.volume = 0;
-      setMuted(true);
     }
-  }, [muted, musicOn, playMusic]);
+    setMuted(!muted);
+  };
 
-  const fadeToPhase = useCallback((nextPhase, nextIdx) => {
+  const transition = (nextPhase, nextIdx) => {
     setShow(false);
     setTimeout(() => {
       if (nextPhase) setPhase(nextPhase);
       if (nextIdx !== undefined) setQIndex(nextIdx);
-      setTimeout(() => setShow(true), 80);
-    }, 500);
-  }, []);
-
-  const handleFinish = () => {
-    localStorage.removeItem("smartcrick_answers");
-    localStorage.removeItem("smartcrick_index");
-    fadeToPhase("done");
+      setShow(true);
+    }, 400);
   };
 
   const progress = ((qIndex + 1) / questions.length) * 100;
   const q = questions[qIndex];
-  const selected = answers[qIndex];
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden font-sans" style={{ background: "linear-gradient(180deg, #FAFAF8 0%, #F0F5F3 50%, #E8F0EC 100%)" }}>
+    <div className="min-h-screen flex flex-col bg-[#FAFAF8] text-[#2D3E36] overflow-hidden font-sans relative">
       
-      {/* Mute Button */}
-      <button onClick={toggleMute} className="fixed top-5 right-5 z-50 w-10 h-10 rounded-full flex items-center justify-center bg-white/30 backdrop-blur-md border border-[#B4D2C8]/40 hover:scale-110 transition-all">
+      {/* Mute Toggle */}
+      <button onClick={toggleMute} className="fixed top-6 right-6 z-50 p-3 rounded-full bg-white/50 backdrop-blur-md border border-[#B4D2C8] hover:scale-110 transition-transform shadow-sm">
         <SpeakerIcon muted={muted} />
       </button>
 
       {/* Decorative Orbs */}
-      <div className="fixed w-72 h-72 rounded-full pointer-events-none opacity-50" style={{ background: "radial-gradient(circle, #A7C4BC 0%, transparent 70%)", top: "-8%", right: "-6%", animation: "floatOrb 9s ease-in-out infinite" }} />
-      <div className="fixed w-52 h-52 rounded-full pointer-events-none opacity-40" style={{ background: "radial-gradient(circle, #6B9080 0%, transparent 70%)", bottom: "8%", left: "-4%", animation: "floatOrb 11s ease-in-out infinite reverse" }} />
+      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-[#A7C4BC]/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
+      <div className="absolute bottom-[5%] left-[-10%] w-80 h-80 bg-[#6B9080]/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
 
       {/* Progress Bar */}
       {phase === "quiz" && (
-        <div className="w-full px-6 pt-5 pb-2 transition-opacity duration-300" style={{ opacity: show ? 1 : 0.5 }}>
-          <div className="w-full h-1.5 rounded-full bg-[#B4D2C8]/20 overflow-hidden">
+        <div className="w-full px-8 pt-8 transition-opacity duration-300" style={{ opacity: show ? 1 : 0.5 }}>
+          <div className="h-1.5 w-full bg-[#E8F0EC] rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[#A7C4BC] to-[#6B9080] transition-all duration-700 ease-out" style={{ width: `${progress}%` }} />
           </div>
           <div className="flex justify-between mt-2 text-[10px] uppercase tracking-widest font-bold text-[#8FA9A0]">
@@ -174,79 +136,66 @@ function OnboardingPage() {
         </div>
       )}
 
-      {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col items-center justify-center px-6 transition-all duration-500 ease-in-out ${show ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'}`}>
+      {/* Content */}
+      <div className={`flex-1 flex flex-col items-center justify-center px-6 transition-all duration-500 ${show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         
         {phase === "welcome" && (
-          <div className="flex flex-col items-center text-center max-w-md">
-            <img src={LOGO_URL} alt="SmartCrick" className="w-32 h-32 mb-8 rounded-2xl shadow-2xl shadow-[#6B9080]/20 animate-bounce-slow" />
-            <h1 className="text-3xl font-bold text-[#2D3E36] mb-3">Welcome, Champ!</h1>
-            <p className="text-[#8FA9A0] mb-10 leading-relaxed text-sm md:text-base">Ready to level up your game? Let’s customize your AI training experience with a few quick questions.</p>
-            <button onClick={() => { playMusic(); fadeToPhase("quiz"); }} className="px-12 py-4 rounded-full bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] text-white font-bold shadow-xl shadow-[#6B9080]/30 hover:scale-105 active:scale-95 transition-transform">Begin Journey</button>
+          <div className="max-w-md text-center">
+            <img src={LOGO_URL} alt="SmartCrick" className="w-32 h-32 mx-auto mb-8 rounded-3xl shadow-xl shadow-[#6B9080]/20" />
+            <h1 className="text-3xl font-extrabold mb-4">Welcome, Champ!</h1>
+            <p className="text-[#8FA9A0] mb-10">Ready to transform your game? Let's build your AI-powered training journey.</p>
+            <button onClick={() => { if(muted) toggleMute(); transition("quiz"); }} className="w-full py-4 bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] text-white rounded-full font-bold shadow-lg shadow-[#6B9080]/30 hover:scale-[1.02] active:scale-[0.98] transition-all">Begin Assessment</button>
           </div>
         )}
 
         {phase === "quiz" && (
           <div className="w-full max-w-lg">
-            <h2 className="text-xl md:text-2xl font-bold text-[#2D3E36] mb-8 leading-tight">{q.question}</h2>
-            <div className="flex flex-col gap-3">
-              {q.options.map((opt, idx) => (
-                <button key={idx} onClick={() => setAnswers({...answers, [qIndex]: idx})} className={`w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200 flex items-center gap-4 ${selected === idx ? 'bg-[#6B9080]/10 border-[#6B9080] shadow-md' : 'bg-white/60 border-[#B4D2C8]/20 hover:border-[#B4D2C8]'}`}>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selected === idx ? 'bg-[#6B9080] border-[#6B9080]' : 'border-[#B4D2C8]'}`}>
-                    {selected === idx && <CheckIcon />}
+            <h2 className="text-xl md:text-2xl font-bold mb-8 leading-tight">{q.question}</h2>
+            <div className="space-y-3">
+              {q.options.map((opt, i) => (
+                <button key={i} onClick={() => setAnswers({...answers, [qIndex]: i})} className={`w-full text-left p-5 rounded-2xl border-2 transition-all flex items-center gap-4 ${answers[qIndex] === i ? 'bg-[#6B9080]/5 border-[#6B9080] shadow-sm' : 'bg-white border-[#E8F0EC] hover:border-[#B4D2C8]'}`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${answers[qIndex] === i ? 'bg-[#6B9080] border-[#6B9080]' : 'border-[#B4D2C8]'}`}>
+                    {answers[qIndex] === i && <CheckIcon />}
                   </div>
-                  <span className={`text-sm md:text-base font-medium ${selected === idx ? 'text-[#2D3E36]' : 'text-[#4A6259]'}`}>{opt}</span>
+                  <span className="font-medium text-sm md:text-base leading-snug">{opt}</span>
                 </button>
               ))}
             </div>
             <div className="flex justify-between mt-10">
-              <button onClick={() => fadeToPhase(null, qIndex - 1)} disabled={qIndex === 0} className="flex items-center gap-2 px-6 py-2 text-sm font-bold text-[#6B9080] disabled:opacity-30">
-                <ChevronLeft /> Back
-              </button>
-              <button onClick={() => qIndex < questions.length - 1 ? fadeToPhase(null, qIndex + 1) : handleFinish()} disabled={selected === undefined} className={`flex items-center gap-2 px-8 py-2 rounded-full text-sm font-bold text-white transition-all ${selected !== undefined ? 'bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] shadow-lg' : 'bg-[#B4D2C8] opacity-50'}`}>
-                {qIndex === questions.length - 1 ? "Finish" : "Next"} <ChevronRight />
+              <button onClick={() => transition(null, qIndex - 1)} disabled={qIndex === 0} className="px-6 py-2 text-sm font-bold text-[#6B9080] disabled:opacity-20 transition-opacity">Back</button>
+              <button onClick={() => qIndex < questions.length - 1 ? transition(null, qIndex + 1) : transition("done")} disabled={answers[qIndex] === undefined} className={`px-10 py-3 rounded-full text-sm font-bold text-white transition-all ${answers[qIndex] !== undefined ? 'bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] shadow-md hover:scale-105' : 'bg-[#D1DBD6] cursor-not-allowed'}`}>
+                {qIndex === questions.length - 1 ? "Finish" : "Next"}
               </button>
             </div>
           </div>
         )}
 
         {phase === "done" && (
-          <div className="flex flex-col items-center text-center max-w-md">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] flex items-center justify-center mb-6 shadow-xl shadow-[#6B9080]/30 animate-pulse">
-              <CheckIcon size={32} />
+          <div className="max-w-md text-center">
+            <div className="w-20 h-20 bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl text-white">
+               <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <h2 className="text-3xl font-bold text-[#2D3E36] mb-4">You're Ready!</h2>
-            <p className="text-[#6B9080] mb-10 font-medium">Your personalized SmartCrick AI plan is ready to launch.</p>
-            <a href="https://smartcricai.base44.app" className="px-12 py-4 rounded-full bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] text-white font-bold shadow-2xl no-underline hover:scale-105 transition-transform">Start Training</a>
+            <h2 className="text-3xl font-extrabold mb-4">Mastery Awaits!</h2>
+            <p className="text-[#8FA9A0] mb-10">Your customized plan is ready. Let's get to work.</p>
+            <a href="https://smartcricai.base44.app" onClick={() => localStorage.clear()} className="inline-block px-12 py-4 bg-gradient-to-r from-[#6B9080] to-[#A7C4BC] text-white rounded-full font-bold shadow-xl no-underline hover:scale-105 transition-transform">Enter App</a>
           </div>
         )}
-
       </div>
 
-      <div className="pb-8 text-center text-[10px] font-bold text-[#8FA9A0]/50 uppercase tracking-widest">SmartCrick AI — Train Like a Champion</div>
-
-      <style>{`
-        @keyframes floatOrb { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(15px, -20px); } 66% { transform: translate(-15px, 15px); } }
-        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
-        body { margin: 0; background: #FAFAF8; }
-      `}</style>
+      <footer className="pb-8 text-center text-[10px] font-bold text-[#8FA9A0]/40 uppercase tracking-[0.2em]">SmartCrick AI</footer>
     </div>
   );
-}
+};
 
-// --- APP WRAPPER ---
 export default function App() {
-  const [route, setRoute] = useState("home");
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { setTimeout(() => setLoading(false), 1200); }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setRoute("onboarding"), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return route === "home" ? (
+  if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8]">
       <div className="w-10 h-10 border-4 border-[#6B9080]/20 border-t-[#6B9080] rounded-full animate-spin" />
     </div>
-  ) : <OnboardingPage />;
+  );
+
+  return <OnboardingPage />;
 }
