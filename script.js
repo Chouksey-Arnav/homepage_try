@@ -1,4 +1,3 @@
-// --- 1. DATA (Your Questions) ---
 const questions = [
   { id: 1, category: "Getting to Know You", question: "First things first — how would you describe your cricket journey so far?", options: ["Just getting started — I'm brand new to cricket", "I've played casually with friends or in school", "I play regularly at a competitive club level", "I'm a seasoned player with years of serious experience"] },
   { id: 2, category: "Getting to Know You", question: "How many years have you been playing cricket?", options: ["Less than 1 year", "1–3 years", "3–7 years", "7+ years"] },
@@ -36,14 +35,14 @@ const questions = [
   { id: 34, category: "Your SmartCrick Journey", question: "Last one — what word best describes the cricketer you want to become?", options: ["Fearless", "Consistent", "Intelligent", "Unstoppable"] }
 ];
 
-// --- 2. APP STATE ---
-let phase = "welcome"; // 'welcome', 'quiz', 'done'
+// App State
+let phase = "welcome"; 
 let qIndex = 0;
 let answers = {};
 let isMuted = true;
 let musicStarted = false;
 
-// --- 3. DOM ELEMENTS ---
+// DOM Elements
 const appContainer = document.getElementById("app-container");
 const bgMusic = document.getElementById("bg-music");
 const muteBtn = document.getElementById("mute-btn");
@@ -52,7 +51,6 @@ const speakerIcon = document.getElementById("speaker-icon");
 const LOGO_URL = "https://ucarecdn.com/524955bb-11c6-4b20-a6cf-974403ad7456/-/format/auto/";
 const TOTAL = questions.length;
 
-// --- 4. HELPERS ---
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
@@ -68,12 +66,11 @@ function updateSpeakerIcon() {
   }
 }
 
-// --- 5. AUDIO CONTROLS ---
 muteBtn.addEventListener("click", () => {
   if (isMuted) {
     bgMusic.volume = 0.15;
     if (!musicStarted) {
-      bgMusic.play().catch(e => console.log("Audio play failed:", e));
+      bgMusic.play().catch(e => console.log("Audio play prevented"));
       musicStarted = true;
     } else {
       bgMusic.muted = false;
@@ -93,16 +90,10 @@ function startMusic() {
       musicStarted = true;
       isMuted = false;
       updateSpeakerIcon();
-    }).catch(e => console.log("Audio autoplay prevented by browser"));
+    }).catch(e => console.log("Autoplay prevented"));
   }
 }
 
-function stopMusic() {
-  bgMusic.pause();
-  bgMusic.currentTime = 0;
-}
-
-// --- 6. RENDERING LOGIC ---
 function fadeTransition(callback) {
   appContainer.classList.remove("fade-in");
   appContainer.classList.add("fade-out");
@@ -114,11 +105,9 @@ function fadeTransition(callback) {
 }
 
 function render() {
-  appContainer.innerHTML = ""; // Clear current view
-
   if (phase === "welcome") {
     appContainer.innerHTML = `
-      <div class="flex flex-col items-center justify-center text-center max-w-md w-full">
+      <div class="flex flex-col items-center justify-center text-center max-w-md w-full pb-16">
         <div class="mb-8 animate-pulse-custom">
           <img src="${LOGO_URL}" alt="SmartCrick AI" class="w-32 h-32 md:w-40 md:h-40 object-contain rounded-2xl" style="filter: drop-shadow(0 10px 40px rgba(107,144,128,0.22));" />
         </div>
@@ -130,10 +119,7 @@ function render() {
     `;
     document.getElementById("begin-btn").addEventListener("click", () => {
       startMusic();
-      fadeTransition(() => {
-        phase = "quiz";
-        render();
-      });
+      fadeTransition(() => { phase = "quiz"; render(); });
     });
   } 
   
@@ -155,10 +141,10 @@ function render() {
       const checkCircleBg = picked ? "#6B9080" : "transparent";
       
       return `
-        <button data-idx="${idx}" class="quiz-option w-full text-left px-5 py-4 rounded-2xl text-sm md:text-base cursor-pointer" style="background: ${bg}; border: ${border}; color: ${color}; box-shadow: ${shadow}; transform: ${transform};">
+        <button data-idx="${idx}" class="quiz-option w-full text-left px-5 py-4 rounded-2xl text-sm md:text-base cursor-pointer" style="background: ${bg}; border: ${border}; color: ${color}; box-shadow: ${shadow}; transform: ${transform}; transition: all 0.3s ease;">
           <div class="flex items-center gap-3">
             <div class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center transition-all duration-300" style="border: ${checkCircleBorder}; background: ${checkCircleBg};">
-              ${picked ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+              ${picked ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
             </div>
             <span class="leading-snug font-medium">${opt}</span>
           </div>
@@ -167,74 +153,56 @@ function render() {
     }).join("");
 
     appContainer.innerHTML = `
-      <div class="w-full max-w-lg mx-auto flex flex-col h-full justify-center">
-        
+      <div class="w-full max-w-lg mx-auto flex flex-col justify-center pb-16">
         <div class="w-full pb-8">
           <div class="w-full h-1.5 rounded-full overflow-hidden" style="background: rgba(180,210,200,0.22);">
             <div class="h-full rounded-full" style="width: ${progress}%; background: linear-gradient(90deg, #A7C4BC, #6B9080); transition: width 0.85s cubic-bezier(0.4,0,0.2,1);"></div>
           </div>
           <div class="flex justify-between mt-2 px-0.5">
-            <span class="text-xs tracking-wide font-medium" style="color: #8FA9A0;">${q.category}</span>
+            <span class="text-xs tracking-wide font-medium uppercase" style="color: #8FA9A0;">${q.category}</span>
             <span class="text-xs font-medium" style="color: #8FA9A0;">${qIndex + 1} of ${TOTAL}</span>
           </div>
         </div>
-
         <h2 class="text-xl md:text-2xl font-semibold mb-8 leading-snug px-2" style="color: #2D3E36;">${q.question}</h2>
         <div class="flex flex-col gap-3 px-2">
           ${optionsHtml}
         </div>
-        
         <div class="flex items-center justify-between mt-8 px-2">
           <button id="back-btn" class="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300" style="color: ${qIndex > 0 ? '#6B9080' : 'rgba(143,169,160,0.35)'}; background: ${qIndex > 0 ? 'rgba(180,210,200,0.14)' : 'transparent'}; cursor: ${qIndex > 0 ? 'pointer' : 'default'};">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back
           </button>
-          <button id="next-btn" class="flex items-center gap-1.5 px-7 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${canNext ? 'hover:scale-105 active:scale-95' : ''}" style="color: ${canNext ? '#fff' : 'rgba(143,169,160,0.45)'}; background: ${canNext ? 'linear-gradient(135deg, #6B9080, #A7C4BC)' : 'rgba(180,210,200,0.18)'}; box-shadow: ${canNext ? '0 4px 18px rgba(107,144,128,0.24)' : 'none'}; cursor: ${canNext ? 'pointer' : 'default'};">
+          <button id="next-btn" class="flex items-center gap-1.5 px-7 py-2.5 rounded-full text-sm font-medium transition-all duration-300" style="color: ${canNext ? '#fff' : 'rgba(143,169,160,0.45)'}; background: ${canNext ? 'linear-gradient(135deg, #6B9080, #A7C4BC)' : 'rgba(180,210,200,0.18)'}; box-shadow: ${canNext ? '0 4px 18px rgba(107,144,128,0.24)' : 'none'}; cursor: ${canNext ? 'pointer' : 'default'}; ${canNext ? 'transform: scale(1);' : ''}">
             ${isLast ? 'Finish' : 'Next'} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </button>
         </div>
       </div>
     `;
 
-    // Add event listeners for options
     document.querySelectorAll(".quiz-option").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        const idx = parseInt(e.currentTarget.getAttribute("data-idx"));
-        answers[qIndex] = idx;
-        render(); // Re-render to show selection and activate Next button
+        answers[qIndex] = parseInt(e.currentTarget.getAttribute("data-idx"));
+        render(); 
       });
     });
 
-    // Back button
     document.getElementById("back-btn").addEventListener("click", () => {
-      if (qIndex > 0) {
-        fadeTransition(() => {
-          qIndex--;
-          render();
-        });
-      }
+      if (qIndex > 0) { fadeTransition(() => { qIndex--; render(); }); }
     });
 
-    // Next/Finish button
     document.getElementById("next-btn").addEventListener("click", () => {
       if (!canNext) return;
       if (qIndex < TOTAL - 1) {
-        fadeTransition(() => {
-          qIndex++;
-          render();
-        });
+        fadeTransition(() => { qIndex++; render(); });
       } else {
-        stopMusic();
-        fadeTransition(() => {
-          phase = "done";
-          render();
-        });
+        bgMusic.pause();
+        fadeTransition(() => { phase = "done"; render(); });
       }
     });
   } 
   
   else if (phase === "done") {
     appContainer.innerHTML = `
-      <div class="flex flex-col items-center justify-center text-center max-w-md w-full">
+      <div class="flex flex-col items-center justify-center text-center max-w-md w-full pb-16">
         <div class="mb-6 animate-pulse-custom">
           <img src="${LOGO_URL}" alt="SmartCrick AI" class="w-28 h-28 md:w-36 md:h-36 object-contain rounded-2xl" style="filter: drop-shadow(0 10px 40px rgba(107,144,128,0.25));" />
         </div>
@@ -244,12 +212,11 @@ function render() {
         <h2 class="text-2xl md:text-3xl font-semibold mb-3" style="color: #2D3E36;">You're all set, Champ!</h2>
         <p class="text-sm md:text-base mb-4 leading-relaxed font-medium" style="color: #6B9080;">We've crafted a personalized training experience just for you. Your cricket journey with SmartCrick AI starts now.</p>
         <p class="text-base md:text-lg font-medium mb-10 leading-relaxed" style="color: #4A6259;">Are you ready to unlock the best training app of your entire life?</p>
-        <a href="https://smartcricai.base44.app" target="_blank" class="px-12 py-4 rounded-full text-white font-semibold text-base md:text-lg tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 inline-block cursor-pointer" style="background: linear-gradient(135deg, #6B9080, #A7C4BC); box-shadow: 0 12px 44px rgba(107,144,128,0.35); text-decoration: none;">Start Training</a>
+        <a href="https://smartcricai.base44.app" class="px-12 py-4 rounded-full text-white font-semibold text-base md:text-lg tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 inline-block cursor-pointer" style="background: linear-gradient(135deg, #6B9080, #A7C4BC); box-shadow: 0 12px 44px rgba(107,144,128,0.35); text-decoration: none;">Start Training</a>
       </div>
     `;
   }
 }
 
-// Initialize
 updateSpeakerIcon();
 render();
