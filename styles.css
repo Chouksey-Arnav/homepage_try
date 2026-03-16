@@ -1,0 +1,51 @@
+/* Base styles */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gentlePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(12px, -18px); }
+  66% { transform: translate(-10px, 12px); }
+}
+
+/* Custom Animation Classes */
+.animate-pulse-custom {
+  animation: gentlePulse 3.5s ease-in-out infinite;
+}
+
+.animate-pulse-fast {
+  animation: gentlePulse 2.5s ease-in-out infinite;
+}
+
+.float-orb-1 { animation: floatOrb 9s ease-in-out infinite; }
+.float-orb-2 { animation: floatOrb 11s ease-in-out infinite reverse; }
+.float-orb-3 { animation: floatOrb 13s ease-in-out infinite; }
+
+/* Transitions for switching screens */
+.fade-in {
+  opacity: 1;
+  transform: translateY(0px) scale(1);
+  transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1);
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateY(18px) scale(0.97);
+  transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1);
+}
+
+.quiz-option {
+  transition: all 0.3s ease;
+}
