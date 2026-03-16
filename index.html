@@ -6,110 +6,135 @@
 <title>SmartCrick AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300&display=swap" rel="stylesheet"/>
 <style>
-/* ─────────────────────────────────────────────
-   RESET & BASE
-───────────────────────────────────────────── */
+
+/* ─────────────────────────────────────────────────────
+   ROOT & RESET
+───────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --brand:        #3D7A5F;
-  --brand-light:  #5A9978;
-  --brand-pale:   #E6F2EC;
-  --brand-check:  #3D7A5F;
+  --white:          #FFFFFF;
+  --bg:             #F5F8F6;
+  --surface:        rgba(255,255,255,0.92);
 
-  --bg:           #F8FAF8;
-  --surface:      #FFFFFF;
+  --green-deep:     #22453A;
+  --green-mid:      #2E6651;
+  --green:          #3B7D63;
+  --green-soft:     #6BA88C;
+  --green-mist:     #A8CCBB;
+  --green-ghost:    #D6EAE0;
+  --green-breath:   #EBF5EF;
 
-  --txt-primary:  #111C17;
-  --txt-sub:      #5A7A6A;
-  --txt-muted:    #96B3A5;
+  --text-deep:      #182E26;
+  --text-body:      #3D6655;
+  --text-soft:      #7BA896;
+  --text-faint:     #B0CCBF;
 
-  --card-border:  #E2EDE7;
-  --card-shadow:  rgba(30, 70, 50, 0.06);
-
-  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+  --ease:           cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:        cubic-bezier(0.4, 0, 1, 1);
 }
 
 html, body {
   height: 100%;
-  font-family: 'Nunito', system-ui, sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   background: var(--bg);
-  color: var(--txt-primary);
+  color: var(--text-deep);
   -webkit-font-smoothing: antialiased;
-  overflow: hidden; /* prevent scroll flash during transitions */
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
-/* ─────────────────────────────────────────────
-   BACKGROUND ORBS  (Tiimo-style soft depth)
-───────────────────────────────────────────── */
-.orb {
+/* ─────────────────────────────────────────────────────
+   NOISE GRAIN OVERLAY — meditative texture
+───────────────────────────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+/* ─────────────────────────────────────────────────────
+   BACKGROUND — soft gradient pools
+───────────────────────────────────────────────────── */
+.pool {
   position: fixed;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(80px);
+  filter: blur(100px);
   will-change: transform;
-  opacity: 1;
 }
-.orb-a {
-  width: 540px; height: 540px;
-  top: -160px; right: -160px;
-  background: radial-gradient(circle, rgba(100,185,140,0.18) 0%, transparent 65%);
-  animation: floatA 20s ease-in-out infinite;
+.pool-1 {
+  width: 700px; height: 700px;
+  top: -220px; right: -200px;
+  background: radial-gradient(circle, rgba(90,180,130,0.13) 0%, transparent 60%);
+  animation: drift1 28s ease-in-out infinite;
 }
-.orb-b {
-  width: 420px; height: 420px;
-  bottom: -100px; left: -120px;
-  background: radial-gradient(circle, rgba(90,153,120,0.14) 0%, transparent 65%);
-  animation: floatB 26s ease-in-out infinite;
+.pool-2 {
+  width: 550px; height: 550px;
+  bottom: -160px; left: -160px;
+  background: radial-gradient(circle, rgba(70,150,110,0.10) 0%, transparent 60%);
+  animation: drift2 34s ease-in-out infinite;
 }
-.orb-c {
-  width: 300px; height: 300px;
-  top: 42%; left: 60%;
-  background: radial-gradient(circle, rgba(120,200,160,0.12) 0%, transparent 65%);
-  animation: floatC 18s ease-in-out infinite;
+.pool-3 {
+  width: 380px; height: 380px;
+  top: 35%; left: 50%;
+  background: radial-gradient(circle, rgba(110,190,150,0.09) 0%, transparent 60%);
+  animation: drift3 22s ease-in-out infinite;
 }
-@keyframes floatA {
-  0%,100% { transform: translate(0,0); }
-  40%     { transform: translate(20px,-30px); }
-  70%     { transform: translate(-15px,18px); }
-}
-@keyframes floatB {
-  0%,100% { transform: translate(0,0); }
-  35%     { transform: translate(-25px,-20px); }
-  70%     { transform: translate(18px,25px); }
-}
-@keyframes floatC {
-  0%,100% { transform: translate(0,0); }
-  50%     { transform: translate(12px,-18px); }
+.pool-4 {
+  width: 260px; height: 260px;
+  top: 8%; left: 8%;
+  background: radial-gradient(circle, rgba(80,160,120,0.07) 0%, transparent 60%);
+  animation: drift1 40s ease-in-out infinite reverse;
 }
 
-/* ─────────────────────────────────────────────
+@keyframes drift1 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%     { transform: translate(22px,-32px) scale(1.04); }
+  66%     { transform: translate(-18px,22px) scale(0.97); }
+}
+@keyframes drift2 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  40%     { transform: translate(-28px,-18px) scale(1.05); }
+  75%     { transform: translate(16px,28px) scale(0.96); }
+}
+@keyframes drift3 {
+  0%,100% { transform: translate(-50%,0) scale(1); }
+  50%     { transform: translate(-50%,-20px) scale(1.07); }
+}
+
+/* ─────────────────────────────────────────────────────
    MUTE BUTTON
-───────────────────────────────────────────── */
+───────────────────────────────────────────────────── */
 #mute-btn {
   position: fixed;
-  top: 18px; right: 18px;
-  z-index: 200;
-  width: 46px; height: 46px;
+  top: 20px; right: 20px;
+  z-index: 300;
+  width: 44px; height: 44px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.72);
-  backdrop-filter: blur(14px) saturate(1.4);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  border: 1.5px solid rgba(180,220,200,0.55);
-  box-shadow: 0 4px 20px rgba(40,80,60,0.08);
+  border: 1.5px solid rgba(168,204,187,0.45);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: 0 2px 20px rgba(34,69,58,0.07);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s;
 }
-#mute-btn:hover  { transform: scale(1.1); box-shadow: 0 8px 28px rgba(40,80,60,0.14); }
-#mute-btn:active { transform: scale(0.93); }
+#mute-btn:hover  { transform: scale(1.12); box-shadow: 0 6px 28px rgba(34,69,58,0.12); background: rgba(255,255,255,0.82); }
+#mute-btn:active { transform: scale(0.92); }
 
-/* ─────────────────────────────────────────────
-   STAGE  — the full-screen container
-───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────
+   STAGE
+───────────────────────────────────────────────────── */
 #stage {
   position: relative;
   z-index: 10;
@@ -118,38 +143,40 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28px 22px 40px;
-  overflow: hidden;
+  padding: 32px 24px 48px;
 }
 
-/* ─────────────────────────────────────────────
-   SCREEN PANEL  — the inner content card
-───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────
+   SCREEN — transition container
+───────────────────────────────────────────────────── */
 #screen {
   width: 100%;
-  max-width: 520px;
+  max-width: 500px;
   will-change: opacity, transform;
 }
 
-/* Transition states */
-#screen.fade-out {
-  animation: screenOut 0.46s var(--ease-out) forwards;
+/* OUT: fast — user gets immediate response */
+#screen.out {
+  animation: scOut 0.32s var(--ease-in) forwards;
 }
-#screen.fade-in {
-  animation: screenIn 0.72s var(--ease-out) forwards;
-}
-@keyframes screenOut {
-  from { opacity: 1; transform: translateY(0)   scale(1); }
-  to   { opacity: 0; transform: translateY(-16px) scale(0.984); }
-}
-@keyframes screenIn {
-  from { opacity: 0; transform: translateY(22px) scale(0.988); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
+/* IN: slow and meditative — the breath coming back in */
+#screen.in {
+  animation: scIn 1.1s var(--ease) forwards;
 }
 
-/* ─────────────────────────────────────────────
-   WELCOME SCREEN
-───────────────────────────────────────────── */
+@keyframes scOut {
+  0%   { opacity: 1; transform: translateY(0)    scale(1);     filter: blur(0px); }
+  100% { opacity: 0; transform: translateY(-14px) scale(0.982); filter: blur(3px); }
+}
+@keyframes scIn {
+  0%   { opacity: 0; transform: translateY(26px) scale(0.984); filter: blur(4px); }
+  40%  { filter: blur(0px); }
+  100% { opacity: 1; transform: translateY(0)   scale(1);     filter: blur(0px); }
+}
+
+/* ─────────────────────────────────────────────────────
+   WELCOME
+───────────────────────────────────────────────────── */
 .welcome {
   display: flex;
   flex-direction: column;
@@ -157,450 +184,444 @@ html, body {
   text-align: center;
 }
 
-.logo-wrap {
-  margin-bottom: 32px;
-  animation: breathe 5s ease-in-out infinite;
+.logo-ring {
+  position: relative;
+  margin-bottom: 38px;
+  animation: breatheLogo 7s ease-in-out infinite;
 }
-.logo-wrap img {
-  width: 100px; height: 100px;
+/* soft pulsing halo */
+.logo-ring::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 42px;
+  background: radial-gradient(circle, rgba(90,180,130,0.14) 0%, transparent 70%);
+  animation: halo 7s ease-in-out infinite;
+}
+.logo-ring img {
+  position: relative;
+  width: 96px; height: 96px;
   border-radius: 26px;
   object-fit: contain;
   box-shadow:
-    0 20px 60px rgba(40,100,70,0.18),
-    0 4px 16px rgba(40,100,70,0.10);
+    0 18px 56px rgba(34,69,58,0.16),
+    0 4px 14px rgba(34,69,58,0.09);
 }
-@keyframes breathe {
+@keyframes breatheLogo {
   0%,100% { transform: translateY(0) scale(1); }
-  50%     { transform: translateY(-5px) scale(1.025); }
+  50%     { transform: translateY(-6px) scale(1.02); }
+}
+@keyframes halo {
+  0%,100% { opacity: 0.6; transform: scale(1); }
+  50%     { opacity: 1;   transform: scale(1.08); }
 }
 
-.welcome-tag {
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--brand-light);
-  margin-bottom: 14px;
-}
-
-.welcome-h1 {
-  font-size: clamp(2.4rem, 9vw, 3.4rem);
-  font-weight: 900;
-  color: var(--txt-primary);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  margin-bottom: 18px;
-}
-
-.welcome-p {
-  font-size: clamp(0.95rem, 2.6vw, 1.05rem);
+.w-tag {
+  font-size: 0.72rem;
   font-weight: 600;
-  color: var(--txt-sub);
-  line-height: 1.7;
-  max-width: 360px;
-  margin-bottom: 44px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green-soft);
+  margin-bottom: 16px;
 }
 
-.pill-btn {
+.w-title {
+  font-size: clamp(2.5rem, 10vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.07;
+  letter-spacing: -0.035em;
+  color: var(--text-deep);
+  margin-bottom: 20px;
+}
+
+.w-sub {
+  font-size: clamp(0.95rem, 2.8vw, 1.05rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-body);
+  line-height: 1.75;
+  max-width: 340px;
+  margin-bottom: 50px;
+  opacity: 0.85;
+}
+
+/* CTA Button */
+.cta {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 17px 46px;
+  gap: 10px;
+  padding: 18px 50px;
   border-radius: 999px;
   border: none;
   cursor: pointer;
   font-family: inherit;
-  font-size: 1.05rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: #fff;
-  background: var(--brand);
+  background: linear-gradient(135deg, var(--green-mid) 0%, var(--green) 100%);
   box-shadow:
-    0 12px 38px rgba(40,100,70,0.26),
-    0 3px 10px rgba(40,100,70,0.14),
-    inset 0 1px 0 rgba(255,255,255,0.14);
-  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), background 0.2s;
+    0 10px 40px rgba(34,69,58,0.22),
+    0 3px 10px rgba(34,69,58,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
   position: relative; overflow: hidden;
+  text-decoration: none;
 }
-.pill-btn::after {
+.cta::before {
   content:''; position:absolute; inset:0; border-radius:inherit;
-  background: linear-gradient(180deg, rgba(255,255,255,0.09) 0%, transparent 55%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.11) 0%, transparent 50%);
   pointer-events:none;
 }
-.pill-btn:hover  {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 20px 52px rgba(40,100,70,0.3), 0 6px 16px rgba(40,100,70,0.16);
-  background: var(--brand-light);
-}
-.pill-btn:active { transform: scale(0.96); }
+.cta:hover  { transform: translateY(-3px) scale(1.04); box-shadow: 0 20px 54px rgba(34,69,58,0.26), 0 6px 18px rgba(34,69,58,0.14); }
+.cta:active { transform: scale(0.96); }
 
-/* ─────────────────────────────────────────────
-   QUIZ SCREEN
-───────────────────────────────────────────── */
-.quiz {
-  display: flex;
-  flex-direction: column;
-}
+/* ─────────────────────────────────────────────────────
+   QUIZ
+───────────────────────────────────────────────────── */
+.quiz { display: flex; flex-direction: column; }
 
 /* Progress */
-.prog-track {
-  width: 100%;
-  height: 4px;
+.p-track {
+  width: 100%; height: 3px;
   border-radius: 999px;
-  background: rgba(150,190,170,0.22);
+  background: rgba(168,204,187,0.2);
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
-.prog-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--brand-light), var(--brand));
-  transition: width 0.9s var(--ease-out);
+.p-fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--green-mist), var(--green));
+  transition: width 1.1s var(--ease);
 }
-.prog-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 36px;
+.p-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 42px;
 }
-.prog-cat {
-  font-size: 0.7rem;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--brand-light);
+.p-cat {
+  font-size: 0.67rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--green-soft);
 }
-.prog-num {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--txt-muted);
+.p-num {
+  font-size: 0.72rem; font-weight: 500;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
 }
 
-/* Question */
-.q-text {
-  font-size: clamp(1.65rem, 6vw, 2.35rem);
-  font-weight: 900;
-  color: var(--txt-primary);
-  line-height: 1.18;
-  letter-spacing: -0.025em;
-  margin-bottom: 28px;
+/* Question text */
+.q-h {
+  font-size: clamp(1.7rem, 6.5vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.17;
+  letter-spacing: -0.028em;
+  color: var(--text-deep);
+  margin-bottom: 30px;
 }
 
 /* Options */
-.opts {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 32px;
-}
+.opts { display: flex; flex-direction: column; gap: 11px; margin-bottom: 34px; }
 
 .opt {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  display: flex; align-items: center; gap: 15px;
   width: 100%;
-  padding: 17px 18px;
-  border-radius: 22px;
+  padding: 17px 20px;
+  border-radius: 20px;
   background: var(--surface);
-  border: 2px solid var(--card-border);
-  box-shadow: 0 2px 12px var(--card-shadow);
+  border: 1.5px solid rgba(214,234,224,0.8);
+  box-shadow: 0 1px 12px rgba(34,69,58,0.04), 0 0 0 0 transparent;
   cursor: pointer;
   font-family: inherit;
-  font-size: clamp(0.88rem, 2.5vw, 0.97rem);
-  font-weight: 700;
-  color: var(--txt-sub);
+  font-size: clamp(0.87rem, 2.4vw, 0.96rem);
+  font-weight: 500;
+  color: var(--text-body);
   text-align: left;
-  line-height: 1.45;
-  transition:
-    border-color 0.22s var(--ease-out),
-    box-shadow   0.22s var(--ease-out),
-    transform    0.18s var(--ease-out),
-    background   0.22s var(--ease-out),
-    color        0.18s var(--ease-out);
+  line-height: 1.5;
   -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 0.3s var(--ease),
+    box-shadow   0.3s var(--ease),
+    background   0.3s var(--ease),
+    transform    0.22s var(--ease),
+    color        0.3s var(--ease);
   position: relative; overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
-/* subtle inner highlight */
-.opt::before {
-  content:''; position:absolute; inset:0; border-radius:inherit;
-  background: linear-gradient(160deg, rgba(255,255,255,0.7) 0%, transparent 45%);
+/* inner shimmer */
+.opt::after {
+  content:''; position:absolute;
+  top:0; left:0; right:0; height:50%;
+  border-radius:inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
   pointer-events:none;
 }
-.opt:hover:not(.picked) {
-  border-color: rgba(100,180,140,0.45);
-  box-shadow: 0 6px 24px rgba(40,100,70,0.09);
-  transform: translateY(-1px);
-  color: var(--txt-primary);
-}
-.opt:active { transform: scale(0.982); }
 
-.opt.picked {
-  border-color: var(--brand);
-  border-width: 2.5px;
-  background: var(--brand-pale);
-  color: var(--txt-primary);
-  box-shadow: 0 6px 28px rgba(40,100,70,0.13);
-  transform: scale(1.005);
+.opt:hover:not(.sel) {
+  border-color: var(--green-ghost);
+  box-shadow: 0 4px 22px rgba(34,69,58,0.08);
+  transform: translateY(-1px);
+  color: var(--text-deep);
+}
+.opt:active:not(.sel) { transform: scale(0.985); }
+
+.opt.sel {
+  border-color: var(--green);
+  border-width: 2px;
+  background: linear-gradient(135deg, rgba(214,234,224,0.55) 0%, rgba(235,245,239,0.4) 100%);
+  color: var(--text-deep);
+  box-shadow: 0 6px 30px rgba(34,69,58,0.11), 0 0 0 4px rgba(59,125,99,0.06);
+  transform: scale(1.006);
 }
 
 /* Check circle */
-.chk {
+.ring {
   flex-shrink: 0;
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  border: 2px solid var(--card-border);
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1.5px solid rgba(168,204,187,0.7);
   display: flex; align-items: center; justify-content: center;
   transition:
-    border-color 0.22s var(--ease-out),
-    background   0.22s var(--ease-out),
-    transform    0.22s var(--ease-out);
-}
-.opt.picked .chk {
-  border-color: var(--brand);
-  background: var(--brand);
-  transform: scale(1.12);
-}
-.chk svg { display: none; }
-.opt.picked .chk svg { display: block; }
-
-.opt-label { flex: 1; }
-
-/* Back button */
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 9px 16px 9px 10px;
-  border-radius: 999px;
-  border: none;
+    border-color 0.28s var(--ease),
+    background   0.28s var(--ease),
+    transform    0.35s var(--ease);
   background: transparent;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: var(--txt-muted);
-  transition: color 0.18s, background 0.18s, transform 0.18s var(--ease-out);
 }
-.back-btn:hover  { color: var(--txt-sub); background: rgba(150,190,170,0.15); transform: translateX(-2px); }
-.back-btn:active { transform: scale(0.94); }
-.back-btn.hidden { visibility: hidden; pointer-events: none; }
+.opt.sel .ring {
+  border-color: var(--green);
+  background: var(--green);
+  transform: scale(1.15);
+}
+.ring svg { display:none; }
+.opt.sel .ring svg { display:block; }
 
-/* ─────────────────────────────────────────────
-   DONE SCREEN
-───────────────────────────────────────────── */
+.opt-txt { flex:1; }
+
+/* Back */
+.back {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 8px 16px 8px 10px;
+  border-radius: 999px; border: none;
+  background: transparent; cursor: pointer;
+  font-family: inherit; font-size: 0.85rem; font-weight: 600;
+  color: var(--text-faint);
+  transition: color 0.22s, background 0.22s, transform 0.22s var(--ease);
+}
+.back:hover  { color: var(--text-soft); background: rgba(168,204,187,0.14); transform: translateX(-2px); }
+.back:active { transform: scale(0.93); }
+.back.hide   { visibility:hidden; pointer-events:none; }
+
+/* ─────────────────────────────────────────────────────
+   DONE
+───────────────────────────────────────────────────── */
 .done {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
 }
 
-.done-icon {
-  width: 82px; height: 82px;
-  border-radius: 50%;
-  background: var(--brand);
+.done-halo {
+  position: relative;
+  margin-bottom: 32px;
+}
+.done-halo::before {
+  content:''; position:absolute;
+  inset: -18px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(90,180,130,0.16) 0%, transparent 70%);
+  animation: halo 4s ease-in-out infinite;
+}
+.done-circle {
+  position: relative;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(145deg, var(--green-mid), var(--green));
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 30px;
-  box-shadow: 0 16px 50px rgba(40,100,70,0.28), 0 4px 14px rgba(40,100,70,0.14);
-  animation: popIn 0.7s var(--ease-out) both;
+  box-shadow: 0 14px 48px rgba(34,69,58,0.26), 0 4px 14px rgba(34,69,58,0.14);
+  animation: popIn 0.8s var(--ease) both;
 }
 @keyframes popIn {
-  0%   { transform: scale(0.35); opacity: 0; }
-  65%  { transform: scale(1.12); opacity: 1; }
-  100% { transform: scale(1);    opacity: 1; }
+  0%   { transform: scale(0.3); opacity:0; }
+  65%  { transform: scale(1.1); opacity:1; }
+  100% { transform: scale(1);   opacity:1; }
 }
 
 .done-logo {
-  width: 58px; height: 58px;
-  border-radius: 16px;
-  object-fit: contain;
-  margin-bottom: 22px;
-  opacity: 0.9;
-  box-shadow: 0 6px 24px rgba(40,100,70,0.14);
+  width: 52px; height: 52px; border-radius: 15px;
+  object-fit: contain; margin-bottom: 20px; opacity: 0.88;
+  box-shadow: 0 6px 22px rgba(34,69,58,0.12);
 }
 
-.done-h2 {
-  font-size: clamp(2rem, 8vw, 3rem);
-  font-weight: 900;
-  color: var(--txt-primary);
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  margin-bottom: 16px;
+.done-h {
+  font-size: clamp(2rem, 8.5vw, 3.1rem);
+  font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.032em;
+  color: var(--text-deep); margin-bottom: 18px;
 }
-.done-body {
-  font-size: clamp(0.93rem, 2.6vw, 1.05rem);
-  font-weight: 600;
-  color: var(--txt-sub);
-  line-height: 1.7;
-  max-width: 360px;
-  margin: 0 auto 10px;
+.done-p {
+  font-size: clamp(0.92rem, 2.5vw, 1.02rem);
+  font-weight: 400; font-style: italic;
+  color: var(--text-body); line-height: 1.75;
+  max-width: 340px; margin: 0 auto 10px; opacity: 0.88;
 }
 .done-hint {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--txt-muted);
-  margin-bottom: 40px;
-  line-height: 1.6;
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--text-faint); margin-bottom: 44px; line-height: 1.6;
 }
 
-/* ─────────────────────────────────────────────
-   FOOTER WATERMARK
-───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────
+   WATERMARK
+───────────────────────────────────────────────────── */
 .wm {
-  position: fixed; bottom: 14px; left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.65rem; font-weight: 800;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: rgba(100,160,130,0.35);
-  pointer-events: none; z-index: 5; white-space: nowrap;
+  position: fixed; bottom: 16px; left:50%; transform: translateX(-50%);
+  font-size:0.6rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+  color: rgba(107,168,140,0.28); pointer-events:none; z-index:5; white-space:nowrap;
 }
 
-/* ─────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────
    RESPONSIVE
-───────────────────────────────────────────── */
-@media (max-width: 420px) {
-  #stage   { padding: 20px 16px 40px; }
-  .q-text  { margin-bottom: 22px; }
-  .opts    { gap: 8px; }
-  .opt     { padding: 15px 14px; border-radius: 18px; }
+───────────────────────────────────────────────────── */
+@media (max-width: 430px) {
+  #stage  { padding: 20px 18px 44px; }
+  .q-h    { margin-bottom: 22px; }
+  .opts   { gap: 8px; }
+  .opt    { padding: 15px 15px; border-radius: 17px; }
+  .p-row  { margin-bottom: 32px; }
 }
-@media (min-height: 850px) {
-  .q-text  { margin-bottom: 34px; }
+@media (min-height: 820px) {
+  .p-row  { margin-bottom: 52px; }
+  .q-h    { margin-bottom: 38px; }
 }
+
 </style>
 </head>
 <body>
 
-<!-- Background orbs -->
-<div class="orb orb-a"></div>
-<div class="orb orb-b"></div>
-<div class="orb orb-c"></div>
+<div class="pool pool-1"></div>
+<div class="pool pool-2"></div>
+<div class="pool pool-3"></div>
+<div class="pool pool-4"></div>
 
-<!-- Audio -->
 <audio id="bgm" loop preload="none">
   <source src="quietphase-ambient-calm-491578.mp3" type="audio/mpeg"/>
 </audio>
 
-<!-- Mute toggle -->
-<button id="mute-btn" aria-label="Toggle music" title="Toggle music"></button>
+<button id="mute-btn" aria-label="Toggle music"></button>
 
-<!-- Main stage -->
 <div id="stage">
   <div id="screen"></div>
 </div>
 
-<!-- Watermark -->
-<div class="wm">SmartCrick AI — Train Like a Champion</div>
+<div class="wm">SmartCrick AI &nbsp;·&nbsp; Train Like a Champion</div>
 
 <script>
-/* ═══════════════════════════════════════════════
-   DATA
-═══════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════
+   DATA  — all 34 questions
+════════════════════════════════════════════════════ */
 const Qs = [
-  { cat:"Getting to Know You",    q:"First things first — how would you describe your cricket journey so far?",    opts:["Just getting started — I'm brand new to cricket","I've played casually with friends or in school","I play regularly at a competitive club level","I'm a seasoned player with years of serious experience"] },
-  { cat:"Getting to Know You",    q:"How many years have you been playing cricket?",                                opts:["Less than 1 year","1–3 years","3–7 years","7+ years"] },
-  { cat:"Your Playing Identity",  q:"When you step onto the field, what role feels most like you?",                opts:["Batsman — I live for runs","Bowler — I love taking wickets","All-rounder — I do it all","Wicket-keeper — the gloves are my home"] },
-  { cat:"Your Playing Identity",  q:"Which batting style feels natural to you?",                                   opts:["Right-handed batsman","Left-handed batsman","I'm comfortable with both","I'm still figuring it out"] },
-  { cat:"Your Playing Identity",  q:"If you bowl, what's your style?",                                            opts:["Fast bowling — pace and aggression","Medium pace — swing and seam","Spin bowling — flight and turn","I don't bowl much, I focus on batting"] },
-  { cat:"Your Playing Identity",  q:"Where do you prefer to bat in the order?",                                   opts:["Opening — I set the tone","Top order (3–4) — I anchor the innings","Middle order (5–6) — I adapt to situations","Lower order (7+) — I finish or support"] },
-  { cat:"Your Playing Identity",  q:"Which cricket format excites you the most?",                                  opts:["T20 — explosive and fast-paced","ODI — the perfect balance","Test cricket — patience, grit, and glory","I love all formats equally"] },
-  { cat:"Your Personality",       q:"How would you describe your playing temperament?",                            opts:["Aggressive — I attack from ball one","Defensive — I value patience and survival","Strategic — I read the game and adapt","Instinctive — I go with my gut feeling"] },
-  { cat:"Your Personality",       q:"When you're under pressure during a match, what goes through your mind?",     opts:["I thrive — pressure brings out my best","I stay calm and focus on the process","I get nervous but push through it","I tend to overthink and it affects my game"] },
-  { cat:"Your Personality",       q:"After a poor performance, how do you typically respond?",                     opts:["I analyze what went wrong and fix it immediately","I take some time to reset mentally, then come back stronger","I talk it through with teammates or a coach","It stays with me for a while — I need to work on bouncing back"] },
-  { cat:"Goals & Dreams",         q:"What's your biggest cricket goal right now?",                                 opts:["Make it to a competitive team or academy","Improve specific skills (batting, bowling, fielding)","Build match fitness and consistency","Just enjoy the game and have fun"] },
-  { cat:"Goals & Dreams",         q:"Where do you see your cricket in the next 2 years?",                         opts:["Playing at district or state level","Representing my club at a higher division","Becoming a well-rounded player","I'm not sure yet — I'm open to wherever this takes me"] },
-  { cat:"Goals & Dreams",         q:"What does 'success' in cricket mean to you personally?",                     opts:["Winning trophies and titles","Consistently performing at my best","Being respected by teammates and opponents","Mastering the craft and loving every session"] },
-  { cat:"Training Style",         q:"How often do you currently train or practice?",                              opts:["Almost every day — cricket is my life","3–5 times a week","1–2 times a week","Rarely — I want to start training more"] },
-  { cat:"Training Style",         q:"What time of day works best for your training?",                             opts:["Early morning — I love the fresh start","Afternoon — when the energy is high","Evening — after school or work","I'm flexible — whenever I get a chance"] },
-  { cat:"Training Style",         q:"Do you prefer training alone or with others?",                               opts:["Solo — I focus better on my own","With a partner — we push each other","In a group or team setting","A mix of everything depending on the session"] },
-  { cat:"Training Style",         q:"How do you usually learn new skills?",                                       opts:["Watching videos and tutorials","Working directly with a coach","Trial and error during practice","Studying professional players and mimicking them"] },
-  { cat:"Skills & Improvement",   q:"Which area of your game needs the most work right now?",                     opts:["Batting technique and shot selection","Bowling accuracy and variations","Fielding, catching, and ground work","Mental toughness and match awareness"] },
-  { cat:"Skills & Improvement",   q:"As a batsman, which shot do you struggle with the most?",                    opts:["Playing short-pitched deliveries","Driving through the covers","Sweep and reverse sweep","Playing spin bowling confidently"] },
-  { cat:"Skills & Improvement",   q:"What's your biggest strength on the cricket field?",                         opts:["Power hitting and big shots","Consistency and building innings","Reading the game and making smart decisions","Athleticism and energy in the field"] },
-  { cat:"Mental Game",            q:"How important is the mental side of cricket to you?",                        opts:["Extremely — it's what separates good from great","Very important — I'm actively working on it","Somewhat — I know I should focus more on it","I haven't thought much about it yet"] },
-  { cat:"Mental Game",            q:"Do you practice any form of mental preparation before a match?",             opts:["Yes — visualization, breathing, or meditation","I have a pre-match routine that helps me focus","Sometimes, but not consistently","No — I'd love to learn how"] },
-  { cat:"Mental Game",            q:"How do you handle sledging or distractions on the field?",                   opts:["I stay completely focused — nothing gets to me","I use it as fuel to perform better","It bothers me sometimes but I manage","It really affects my concentration"] },
-  { cat:"Fitness & Body",         q:"How would you rate your current fitness level?",                             opts:["Very fit — I train my body regularly","Decent — I can keep up but want to improve","Needs work — I get tired quickly on the field","I haven't focused on fitness yet"] },
-  { cat:"Fitness & Body",         q:"Do you follow any specific fitness or diet plan for cricket?",               opts:["Yes — structured fitness and nutrition plan","I work out but don't follow a strict plan","I eat well but don't exercise specifically for cricket","Not yet — I'd like guidance on this"] },
-  { cat:"Technology & Analysis",  q:"How comfortable are you with using technology in your training?",            opts:["Very — I already use apps, video analysis, and data","Somewhat — I'm open to learning more","Not much — but I'm curious about it","This is all new to me"] },
-  { cat:"Technology & Analysis",  q:"Would you like SmartCrick AI to analyze your match videos?",                 opts:["Absolutely — that's exactly what I need","Yes, if it's easy to use","Maybe later, once I'm more comfortable","I'd prefer to focus on drills and practice plans first"] },
-  { cat:"Coaching & Support",     q:"Do you currently work with a coach?",                                        opts:["Yes — I have a dedicated personal coach","I attend coaching sessions at a club or academy","I've had coaches before but not currently","I've never had formal coaching"] },
-  { cat:"Coaching & Support",     q:"What kind of coaching style works best for you?",                            opts:["Structured and disciplined — tell me exactly what to do","Encouraging and supportive — build my confidence","Analytical — show me data and let me understand why","Flexible — adapt to how I'm feeling that day"] },
-  { cat:"Inspiration",            q:"Which cricketing legend inspires you the most?",                             opts:["Virat Kohli — passion, aggression, and elite fitness","MS Dhoni — calm under pressure, the ultimate finisher","Sachin Tendulkar — mastery, dedication, and grace","Someone else — I have my own cricketing hero"] },
-  { cat:"Inspiration",            q:"What motivates you to keep training even on tough days?",                    opts:["The dream of playing at the highest level","The love of the game — cricket is my passion","My teammates and the people who believe in me","Proving to myself that I can keep getting better"] },
-  { cat:"Your SmartCrick Journey",q:"What feature of SmartCrick AI excites you the most?",                        opts:["AI-powered training plans personalized to me","Video analysis and performance tracking","Mental conditioning and match preparation","All of it — I want the complete experience"] },
-  { cat:"Your SmartCrick Journey",q:"How often would you like SmartCrick AI to check in with you?",               opts:["Daily — keep me accountable every day","A few times a week — regular but not overwhelming","Weekly — a solid summary and plan each week","I'll check in when I feel like it"] },
-  { cat:"Your SmartCrick Journey",q:"Last one — what word best describes the cricketer you want to become?",      opts:["Fearless","Consistent","Intelligent","Unstoppable"] }
+  { cat:"Getting to Know You",     q:"First things first — how would you describe your cricket journey so far?",   opts:["Just getting started — I'm brand new to cricket","I've played casually with friends or in school","I play regularly at a competitive club level","I'm a seasoned player with years of serious experience"] },
+  { cat:"Getting to Know You",     q:"How many years have you been playing cricket?",                               opts:["Less than 1 year","1–3 years","3–7 years","7+ years"] },
+  { cat:"Your Playing Identity",   q:"When you step onto the field, what role feels most like you?",               opts:["Batsman — I live for runs","Bowler — I love taking wickets","All-rounder — I do it all","Wicket-keeper — the gloves are my home"] },
+  { cat:"Your Playing Identity",   q:"Which batting style feels natural to you?",                                  opts:["Right-handed batsman","Left-handed batsman","I'm comfortable with both","I'm still figuring it out"] },
+  { cat:"Your Playing Identity",   q:"If you bowl, what's your style?",                                           opts:["Fast bowling — pace and aggression","Medium pace — swing and seam","Spin bowling — flight and turn","I don't bowl much, I focus on batting"] },
+  { cat:"Your Playing Identity",   q:"Where do you prefer to bat in the order?",                                  opts:["Opening — I set the tone","Top order (3–4) — I anchor the innings","Middle order (5–6) — I adapt to situations","Lower order (7+) — I finish or support"] },
+  { cat:"Your Playing Identity",   q:"Which cricket format excites you the most?",                                 opts:["T20 — explosive and fast-paced","ODI — the perfect balance","Test cricket — patience, grit, and glory","I love all formats equally"] },
+  { cat:"Your Personality",        q:"How would you describe your playing temperament?",                           opts:["Aggressive — I attack from ball one","Defensive — I value patience and survival","Strategic — I read the game and adapt","Instinctive — I go with my gut feeling"] },
+  { cat:"Your Personality",        q:"When you're under pressure during a match, what goes through your mind?",    opts:["I thrive — pressure brings out my best","I stay calm and focus on the process","I get nervous but push through it","I tend to overthink and it affects my game"] },
+  { cat:"Your Personality",        q:"After a poor performance, how do you typically respond?",                    opts:["I analyze what went wrong and fix it immediately","I take some time to reset mentally, then come back stronger","I talk it through with teammates or a coach","It stays with me for a while — I need to work on bouncing back"] },
+  { cat:"Goals & Dreams",          q:"What's your biggest cricket goal right now?",                                opts:["Make it to a competitive team or academy","Improve specific skills (batting, bowling, fielding)","Build match fitness and consistency","Just enjoy the game and have fun"] },
+  { cat:"Goals & Dreams",          q:"Where do you see your cricket in the next 2 years?",                        opts:["Playing at district or state level","Representing my club at a higher division","Becoming a well-rounded player","I'm not sure yet — I'm open to wherever this takes me"] },
+  { cat:"Goals & Dreams",          q:"What does 'success' in cricket mean to you personally?",                    opts:["Winning trophies and titles","Consistently performing at my best","Being respected by teammates and opponents","Mastering the craft and loving every session"] },
+  { cat:"Training Style",          q:"How often do you currently train or practice?",                             opts:["Almost every day — cricket is my life","3–5 times a week","1–2 times a week","Rarely — I want to start training more"] },
+  { cat:"Training Style",          q:"What time of day works best for your training?",                            opts:["Early morning — I love the fresh start","Afternoon — when the energy is high","Evening — after school or work","I'm flexible — whenever I get a chance"] },
+  { cat:"Training Style",          q:"Do you prefer training alone or with others?",                              opts:["Solo — I focus better on my own","With a partner — we push each other","In a group or team setting","A mix of everything depending on the session"] },
+  { cat:"Training Style",          q:"How do you usually learn new skills?",                                      opts:["Watching videos and tutorials","Working directly with a coach","Trial and error during practice","Studying professional players and mimicking them"] },
+  { cat:"Skills & Improvement",    q:"Which area of your game needs the most work right now?",                    opts:["Batting technique and shot selection","Bowling accuracy and variations","Fielding, catching, and ground work","Mental toughness and match awareness"] },
+  { cat:"Skills & Improvement",    q:"As a batsman, which shot do you struggle with the most?",                   opts:["Playing short-pitched deliveries","Driving through the covers","Sweep and reverse sweep","Playing spin bowling confidently"] },
+  { cat:"Skills & Improvement",    q:"What's your biggest strength on the cricket field?",                        opts:["Power hitting and big shots","Consistency and building innings","Reading the game and making smart decisions","Athleticism and energy in the field"] },
+  { cat:"Mental Game",             q:"How important is the mental side of cricket to you?",                       opts:["Extremely — it's what separates good from great","Very important — I'm actively working on it","Somewhat — I know I should focus more on it","I haven't thought much about it yet"] },
+  { cat:"Mental Game",             q:"Do you practice any form of mental preparation before a match?",            opts:["Yes — visualization, breathing, or meditation","I have a pre-match routine that helps me focus","Sometimes, but not consistently","No — I'd love to learn how"] },
+  { cat:"Mental Game",             q:"How do you handle sledging or distractions on the field?",                  opts:["I stay completely focused — nothing gets to me","I use it as fuel to perform better","It bothers me sometimes but I manage","It really affects my concentration"] },
+  { cat:"Fitness & Body",          q:"How would you rate your current fitness level?",                            opts:["Very fit — I train my body regularly","Decent — I can keep up but want to improve","Needs work — I get tired quickly on the field","I haven't focused on fitness yet"] },
+  { cat:"Fitness & Body",          q:"Do you follow any specific fitness or diet plan for cricket?",              opts:["Yes — structured fitness and nutrition plan","I work out but don't follow a strict plan","I eat well but don't exercise specifically for cricket","Not yet — I'd like guidance on this"] },
+  { cat:"Technology & Analysis",   q:"How comfortable are you with using technology in your training?",           opts:["Very — I already use apps, video analysis, and data","Somewhat — I'm open to learning more","Not much — but I'm curious about it","This is all new to me"] },
+  { cat:"Technology & Analysis",   q:"Would you like SmartCrick AI to analyze your match videos?",                opts:["Absolutely — that's exactly what I need","Yes, if it's easy to use","Maybe later, once I'm more comfortable","I'd prefer to focus on drills and practice plans first"] },
+  { cat:"Coaching & Support",      q:"Do you currently work with a coach?",                                       opts:["Yes — I have a dedicated personal coach","I attend coaching sessions at a club or academy","I've had coaches before but not currently","I've never had formal coaching"] },
+  { cat:"Coaching & Support",      q:"What kind of coaching style works best for you?",                           opts:["Structured and disciplined — tell me exactly what to do","Encouraging and supportive — build my confidence","Analytical — show me data and let me understand why","Flexible — adapt to how I'm feeling that day"] },
+  { cat:"Inspiration",             q:"Which cricketing legend inspires you the most?",                            opts:["Virat Kohli — passion, aggression, and elite fitness","MS Dhoni — calm under pressure, the ultimate finisher","Sachin Tendulkar — mastery, dedication, and grace","Someone else — I have my own cricketing hero"] },
+  { cat:"Inspiration",             q:"What motivates you to keep training even on tough days?",                   opts:["The dream of playing at the highest level","The love of the game — cricket is my passion","My teammates and the people who believe in me","Proving to myself that I can keep getting better"] },
+  { cat:"Your SmartCrick Journey", q:"What feature of SmartCrick AI excites you the most?",                       opts:["AI-powered training plans personalized to me","Video analysis and performance tracking","Mental conditioning and match preparation","All of it — I want the complete experience"] },
+  { cat:"Your SmartCrick Journey", q:"How often would you like SmartCrick AI to check in with you?",              opts:["Daily — keep me accountable every day","A few times a week — regular but not overwhelming","Weekly — a solid summary and plan each week","I'll check in when I feel like it"] },
+  { cat:"Your SmartCrick Journey", q:"Last one — what word best describes the cricketer you want to become?",     opts:["Fearless","Consistent","Intelligent","Unstoppable"] },
 ];
 
-const TOTAL  = Qs.length;
-const LOGO   = "https://ucarecdn.com/524955bb-11c6-4b20-a6cf-974403ad7456/-/format/auto/";
+const TOTAL = Qs.length;
+const LOGO  = "https://ucarecdn.com/524955bb-11c6-4b20-a6cf-974403ad7456/-/format/auto/";
 
-/* ═══════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
    STATE
-═══════════════════════════════════════════════ */
+════════════════════════════════════════════════════ */
 let phase   = "welcome";
 let qi      = 0;
 let answers = {};
 let muted   = true;
-let musicOn = false;
-let busy    = false;   // blocks clicks during transition
+let playing = false;
+let busy    = false;
 
-/* ═══════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
    AUDIO
-═══════════════════════════════════════════════ */
-const bgm     = document.getElementById("bgm");
-const muteBtn = document.getElementById("mute-btn");
+════════════════════════════════════════════════════ */
+const bgm  = document.getElementById("bgm");
+const mBtn = document.getElementById("mute-btn");
 
-function renderMuteIcon() {
-  muteBtn.innerHTML = muted
-    ? `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3D7A5F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`
-    : `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3D7A5F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+function setMuteIcon() {
+  mBtn.innerHTML = muted
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B7D63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B7D63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
 }
 
-function playMusic() {
-  if (musicOn) return;
-  bgm.volume = 0.13;
-  bgm.play().then(() => { musicOn = true; muted = false; renderMuteIcon(); }).catch(() => {});
+function startMusic() {
+  if (playing) return;
+  bgm.volume = 0.12;
+  bgm.play().then(() => { playing = true; muted = false; setMuteIcon(); }).catch(() => {});
 }
 
-muteBtn.addEventListener("click", () => {
-  if (!musicOn) { playMusic(); return; }
+mBtn.addEventListener("click", () => {
+  if (!playing) { startMusic(); return; }
   muted = !muted;
   bgm.muted = muted;
-  renderMuteIcon();
+  setMuteIcon();
 });
 
-/* ═══════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
    TRANSITION ENGINE
-═══════════════════════════════════════════════ */
-const screen = document.getElementById("screen");
+   OUT = 0.32s (immediate, responsive)
+   IN  = 1.10s (slow, meditative breath)
+════════════════════════════════════════════════════ */
+const sc = document.getElementById("screen");
 
-function go(renderFn) {
+function transition(renderFn) {
   if (busy) return;
   busy = true;
-  screen.classList.remove("fade-in");
-  screen.classList.add("fade-out");
+
+  sc.classList.remove("in");
+  sc.classList.add("out");
 
   setTimeout(() => {
-    screen.classList.remove("fade-out");
+    sc.classList.remove("out");
     renderFn();
-    // force reflow
-    void screen.offsetWidth;
-    screen.classList.add("fade-in");
-    setTimeout(() => { screen.classList.remove("fade-in"); busy = false; }, 720);
-  }, 460);
+    void sc.offsetWidth;                   // force reflow
+    sc.classList.add("in");
+    setTimeout(() => { sc.classList.remove("in"); busy = false; }, 1100);
+  }, 320);
 }
 
-/* ═══════════════════════════════════════════════
-   SVG HELPERS
-═══════════════════════════════════════════════ */
-const CHK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-const ARRL= `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
-const ARRR= `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+/* ════════════════════════════════════════════════════
+   SVG ICONS
+════════════════════════════════════════════════════ */
+const ICO_CHECK = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const ICO_BACK  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
+const ICO_ARR   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
 
-/* ═══════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
    GREETING
-═══════════════════════════════════════════════ */
+════════════════════════════════════════════════════ */
 function greet() {
   const h = new Date().getHours();
   if (h < 5)  return "Good night";
@@ -610,134 +631,131 @@ function greet() {
   return "Good night";
 }
 
-/* ═══════════════════════════════════════════════
-   RENDER: WELCOME
-═══════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════
+   WELCOME
+════════════════════════════════════════════════════ */
 function showWelcome() {
-  screen.innerHTML = `
+  sc.innerHTML = `
     <div class="welcome">
-      <div class="logo-wrap">
+      <div class="logo-ring">
         <img src="${LOGO}" alt="SmartCrick AI"/>
       </div>
-      <p class="welcome-tag">${greet()}, Champ 👋</p>
-      <h1 class="welcome-h1">Welcome to<br>SmartCrick AI</h1>
-      <p class="welcome-p">
-        We'll ask you a few thoughtful questions to build
-        a cricket experience that's completely yours.
+      <p class="w-tag">${greet()}, Champ</p>
+      <h1 class="w-title">Welcome to<br>SmartCrick AI</h1>
+      <p class="w-sub">
+        A few thoughtful questions to build<br>
+        a training journey that is entirely yours.
       </p>
-      <button class="pill-btn" id="begin">
-        Let's Begin &nbsp;${ARRR}
-      </button>
+      <button class="cta" id="begin">Begin &nbsp;${ICO_ARR}</button>
     </div>`;
 
   document.getElementById("begin").addEventListener("click", () => {
-    playMusic();
+    startMusic();
     phase = "quiz"; qi = 0;
-    go(showQuiz);
+    transition(showQuiz);
   });
 }
 
-/* ═══════════════════════════════════════════════
-   RENDER: QUIZ
-═══════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════
+   QUIZ
+════════════════════════════════════════════════════ */
 function showQuiz() {
-  const data     = Qs[qi];
-  const pct      = ((qi + 1) / TOTAL * 100).toFixed(2);
-  const picked   = answers[qi];
+  const d   = Qs[qi];
+  const pct = ((qi + 1) / TOTAL * 100).toFixed(2);
+  const sel = answers[qi];
 
-  const optsHtml = data.opts.map((o, i) => {
-    const yes = picked === i;
-    return `
-      <button class="opt${yes ? " picked" : ""}" data-i="${i}">
-        <span class="chk">${yes ? CHK : ""}</span>
-        <span class="opt-label">${o}</span>
-      </button>`;
-  }).join("");
-
-  screen.innerHTML = `
+  sc.innerHTML = `
     <div class="quiz">
-      <div class="prog-track">
-        <div class="prog-fill" style="width:${pct}%"></div>
+      <div class="p-track"><div class="p-fill" style="width:${pct}%"></div></div>
+      <div class="p-row">
+        <span class="p-cat">${d.cat}</span>
+        <span class="p-num">${qi + 1} / ${TOTAL}</span>
       </div>
-      <div class="prog-meta">
-        <span class="prog-cat">${data.cat}</span>
-        <span class="prog-num">${qi + 1}&thinsp;/&thinsp;${TOTAL}</span>
+      <h2 class="q-h">${d.q}</h2>
+      <div class="opts">
+        ${d.opts.map((o, i) => `
+          <button class="opt${sel === i ? " sel" : ""}" data-i="${i}">
+            <span class="ring">${sel === i ? ICO_CHECK : ""}</span>
+            <span class="opt-txt">${o}</span>
+          </button>`).join("")}
       </div>
-      <h2 class="q-text">${data.q}</h2>
-      <div class="opts" id="opts">${optsHtml}</div>
-      <button class="back-btn${qi === 0 ? " hidden" : ""}" id="back">
-        ${ARRL} Back
+      <button class="back${qi === 0 ? " hide" : ""}" id="back">
+        ${ICO_BACK} Back
       </button>
     </div>`;
 
-  /* Option clicks */
-  document.querySelectorAll(".opt").forEach(btn => {
+  /* ── Option click: flash selection → IMMEDIATELY fade out ── */
+  sc.querySelectorAll(".opt").forEach(btn => {
     btn.addEventListener("click", () => {
       if (busy) return;
       const i = parseInt(btn.dataset.i);
-
-      /* Instant visual feedback */
       answers[qi] = i;
-      document.querySelectorAll(".opt").forEach(b => {
+
+      /* Instant visual — mark selected, lock all buttons */
+      sc.querySelectorAll(".opt").forEach(b => {
         const yes = parseInt(b.dataset.i) === i;
-        b.classList.toggle("picked", yes);
-        b.querySelector(".chk").innerHTML = yes ? CHK : "";
+        b.classList.toggle("sel", yes);
+        b.querySelector(".ring").innerHTML = yes ? ICO_CHECK : "";
         b.style.pointerEvents = "none";
       });
-      const backEl = document.getElementById("back");
-      if (backEl) backEl.style.pointerEvents = "none";
+      const backBtn = document.getElementById("back");
+      if (backBtn) backBtn.style.pointerEvents = "none";
 
-      /* 490ms beat → advance */
-      setTimeout(() => {
-        if (qi < TOTAL - 1) { qi++; go(showQuiz); }
-        else                 { phase = "done"; go(showDone); }
-      }, 490);
+      /* No delay — transition fires immediately after next paint */
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (qi < TOTAL - 1) { qi++; transition(showQuiz); }
+          else                { phase = "done"; transition(showDone); }
+        });
+      });
     });
   });
 
   /* Back */
-  const backEl = document.getElementById("back");
-  if (backEl && qi > 0) {
-    backEl.addEventListener("click", () => {
+  const backBtn = document.getElementById("back");
+  if (backBtn && qi > 0) {
+    backBtn.addEventListener("click", () => {
       if (busy) return;
       qi--;
-      go(showQuiz);
+      transition(showQuiz);
     });
   }
 }
 
-/* ═══════════════════════════════════════════════
-   RENDER: DONE
-═══════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════
+   DONE
+════════════════════════════════════════════════════ */
 function showDone() {
-  screen.innerHTML = `
+  sc.innerHTML = `
     <div class="done">
       <img class="done-logo" src="${LOGO}" alt="SmartCrick AI"/>
-      <div class="done-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none"
-             stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
+      <div class="done-halo">
+        <div class="done-circle">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
+               stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
       </div>
-      <h2 class="done-h2">You're all set,<br>Champ!</h2>
-      <p class="done-body">
-        We've built a personalized training experience just for you.
-        Your SmartCrick AI journey starts right now.
+      <h2 class="done-h">You're all set,<br>Champ.</h2>
+      <p class="done-p">
+        Your personalized cricket journey has been crafted.<br>
+        SmartCrick AI is ready when you are.
       </p>
-      <p class="done-hint">Ready to unlock the training app of your life?</p>
-      <a href="https://smartcricai.base44.app" class="pill-btn" style="text-decoration:none;">
-        Start Training &nbsp;${ARRR}
+      <p class="done-hint">Step onto the field. The best version of you awaits.</p>
+      <a href="https://smartcricai.base44.app" class="cta">
+        Start Training &nbsp;${ICO_ARR}
       </a>
     </div>`;
 }
 
-/* ═══════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
    BOOT
-═══════════════════════════════════════════════ */
-renderMuteIcon();
-screen.classList.add("fade-in");
+════════════════════════════════════════════════════ */
+setMuteIcon();
+sc.classList.add("in");
 showWelcome();
-setTimeout(() => screen.classList.remove("fade-in"), 720);
+setTimeout(() => sc.classList.remove("in"), 1100);
 </script>
 </body>
 </html>
