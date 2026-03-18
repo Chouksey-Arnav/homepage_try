@@ -191,53 +191,62 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opac
 /* ══════════════════════════════════════════════════════════════
    WELCOME SCREEN
 ══════════════════════════════════════════════════════════════ */
-.welcome{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:8px}
-.w-tag  {font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gs);margin-bottom:12px}
-.w-title{font-size:clamp(2.4rem,9vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.036em;color:var(--td);margin-bottom:16px}
+.welcome{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:6px}
+.w-tag  {font-size:.66rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gs);margin-bottom:10px}
+.w-title{font-size:clamp(2.3rem,8.5vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.036em;color:var(--td);margin-bottom:18px}
 
-/* Motivational quote card */
+/* Motivational quote card — sits ABOVE title */
 .w-quote-wrap{
-  width:100%;max-width:340px;
-  margin:0 auto 28px;
-  padding:18px 22px;
-  background:rgba(55,107,85,.055);
-  border:1.5px solid rgba(55,107,85,.14);
+  width:100%;max-width:360px;
+  margin:0 auto 20px;
+  padding:16px 20px 16px 24px;
+  background:rgba(55,107,85,.058);
+  border:1.5px solid rgba(55,107,85,.15);
   border-radius:20px;
   position:relative;
+  text-align:left;
 }
 .w-quote-wrap::before{
   content:'“';
-  position:absolute;top:-12px;left:18px;
-  font-size:3.2rem;line-height:1;font-weight:800;
-  color:var(--gs);opacity:.32;font-family:Georgia,serif;
+  position:absolute;top:-10px;left:14px;
+  font-size:3rem;line-height:1;font-weight:800;
+  color:var(--gs);opacity:.30;font-family:Georgia,serif;
+  pointer-events:none;
 }
 .w-quote{
-  font-size:clamp(.92rem,2.6vw,1.02rem);
+  font-size:clamp(.85rem,2.4vw,.96rem);
   font-weight:400;font-style:italic;
-  color:var(--tb);line-height:1.72;
-  opacity:.90;
+  color:var(--tb);line-height:1.68;
+  opacity:.92;
+  padding-top:4px;
 }
 .w-quote strong{
-  display:block;margin-top:10px;
-  font-size:.68rem;font-weight:700;font-style:normal;
-  letter-spacing:.13em;text-transform:uppercase;
-  color:var(--gs);opacity:.85;
+  display:block;margin-top:9px;
+  font-size:.65rem;font-weight:700;font-style:normal;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gs);opacity:.80;
 }
 
 /* Stat pills row */
 .w-stats{
-  display:flex;gap:10px;justify-content:center;
-  flex-wrap:wrap;margin-bottom:30px;
+  display:flex;gap:8px;justify-content:center;
+  flex-wrap:wrap;margin-bottom:24px;
 }
 .w-stat{
   display:inline-flex;align-items:center;gap:6px;
-  padding:7px 14px;border-radius:999px;
+  padding:7px 13px;border-radius:999px;
   background:rgba(55,107,85,.07);
   border:1.5px solid rgba(55,107,85,.12);
-  font-size:.7rem;font-weight:600;color:var(--ts);
+  font-size:.68rem;font-weight:600;color:var(--ts);
   letter-spacing:.04em;
 }
 .w-stat svg{flex-shrink:0;opacity:.8}
+
+/* Subtle hint below CTA */
+.w-hint{
+  font-size:.68rem;font-weight:500;color:var(--tf);
+  margin-top:14px;letter-spacing:.04em;opacity:.80;
+}
 
 .resume-card{width:100%;max-width:370px;margin:18px auto 0;background:rgba(55,107,85,.07);border:1.5px solid rgba(55,107,85,.18);border-radius:18px;padding:16px 20px;text-align:center}
 .resume-card p{font-size:.85rem;font-weight:500;color:var(--tb);margin-bottom:13px;line-height:1.5}
@@ -317,7 +326,7 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opac
      Full-screen video plays once, then fades to welcome screen.
      File: 13d16477-6541-4a53-901f-61309ebe82d0_hd.mp4  (upload this alongside index.html on GitHub)   -->
 <div id="intro-wrap">
-  <video id="intro-video" autoplay muted playsinline preload="auto"
+  <video id="intro-video" autoplay playsinline preload="auto"
          poster=""
          onended="endIntro()"
          onerror="endIntro()">
@@ -482,29 +491,90 @@ function skipIntro() {
    SCREEN 1 — WELCOME
    (renders behind the intro, pops in after animation ends)
 ══════════════════════════════════════════════════════════════ */
+/* ── 50 daily-rotating motivational cricket quotes ── */
+const QUOTES=[
+  {q:"The will to win means nothing without the will to prepare.",a:"Des Williams"},
+  {q:"Cricket is a game of glorious uncertainties.",a:"Neville Cardus"},
+  {q:"You don't play cricket with your talent alone. You play it with your mind.",a:"Sunil Gavaskar"},
+  {q:"The strongest steel is forged in the hottest fire.",a:"Cricket proverb"},
+  {q:"Champions aren't born in gyms. They're born from something deep inside them.",a:"Muhammad Ali"},
+  {q:"Every ball is the most important ball of your innings.",a:"Steve Waugh"},
+  {q:"The harder the battle, the sweeter the victory.",a:"Les Brown"},
+  {q:"Pressure is a privilege — it only comes to those who earn it.",a:"Billie Jean King"},
+  {q:"In cricket, as in life, character is built through adversity.",a:"Rahul Dravid"},
+  {q:"The man who can drive himself further once the effort gets painful — that man will win.",a:"Roger Bannister"},
+  {q:"Don't let the fear of striking out keep you from playing the game.",a:"Babe Ruth"},
+  {q:"Believe you can and you're halfway there.",a:"Theodore Roosevelt"},
+  {q:"Excellence is not a destination; it is a continuous journey that never ends.",a:"Brian Tracy"},
+  {q:"You have to dream before your dreams can come true.",a:"APJ Abdul Kalam"},
+  {q:"Talent wins games, but teamwork and intelligence win championships.",a:"Michael Jordan"},
+  {q:"The pain you feel today is the strength you feel tomorrow.",a:"Arnold Schwarzenegger"},
+  {q:"Great players are made in the nets, not on match day.",a:"Geoffrey Boycott"},
+  {q:"Consistency is the hallmark of the unimaginative.",a:"Oscar Wilde — but in cricket, it's everything"},
+  {q:"The best time to prepare for your next innings is right after your last one.",a:"Don Bradman"},
+  {q:"When you're in form, everything looks easy. The hard part is getting there.",a:"Sachin Tendulkar"},
+  {q:"Every setback is a setup for a comeback.",a:"Joel Osteen"},
+  {q:"You can't put a limit on anything. The more you dream, the farther you get.",a:"Michael Phelps"},
+  {q:"Success is the sum of small efforts repeated day in and day out.",a:"Robert Collier"},
+  {q:"Discipline is the bridge between goals and accomplishment.",a:"Jim Rohn"},
+  {q:"The only way to prove you're a good sport is to lose.",a:"Ernie Banks"},
+  {q:"Do not let what you cannot do interfere with what you can do.",a:"John Wooden"},
+  {q:"A champion is defined not by their wins but by how they can recover when they fall.",a:"Serena Williams"},
+  {q:"Hard work beats talent when talent doesn't work hard.",a:"Tim Notke"},
+  {q:"It's not whether you get knocked down; it's whether you get up.",a:"Vince Lombardi"},
+  {q:"To give anything less than your best is to sacrifice the gift.",a:"Steve Prefontaine"},
+  {q:"The mind is the athlete, the body is simply the means it uses.",a:"Bryce Courtenay"},
+  {q:"If you fail to prepare, you are preparing to fail.",a:"Benjamin Franklin"},
+  {q:"Cricket is a team game — your individual glory is nothing without collective sacrifice.",a:"Imran Khan"},
+  {q:"The secret is to work less as individuals and more as a team.",a:"Richie Benaud"},
+  {q:"One day you will look back and see that your struggles were your greatest teacher.",a:"Unknown"},
+  {q:"The biggest room in the world is the room for improvement.",a:"Helmut Schmidt"},
+  {q:"Play every ball on its merit. That is the art of batting.",a:"Viv Richards"},
+  {q:"Your attitude, not your aptitude, will determine your altitude.",a:"Zig Ziglar"},
+  {q:"A good head and a good heart are always a formidable combination.",a:"Nelson Mandela"},
+  {q:"Winning is not a sometime thing; it's an all-time thing.",a:"Vince Lombardi"},
+  {q:"Success is not final, failure is not fatal — it is the courage to continue that counts.",a:"Winston Churchill"},
+  {q:"The more I practice, the luckier I get.",a:"Gary Player"},
+  {q:"It's not the will to win that matters. Everyone has that. It's the will to prepare to win.",a:"Bear Bryant"},
+  {q:"Pain is temporary. Pride is forever.",a:"Tom Hanks, A League of Their Own"},
+  {q:"What you do in the off-season determines who you are in the on-season.",a:"Unknown"},
+  {q:"Cricket taught me that you can dominate for a session, a day, a Test — but you must always respect the game.",a:"Brian Lara"},
+  {q:"The best players in the world never stop learning.",a:"Ricky Ponting"},
+  {q:"Ability may get you to the top, but character is what keeps you there.",a:"John Wooden"},
+  {q:"Focus on the process, not the outcome. Play the next ball perfectly.",a:"Mike Hussey"},
+  {q:"Dreams don't work unless you do.",a:"John C. Maxwell"},
+];
+
+function getDailyQuote(){
+  const now=new Date();
+  const start=new Date(now.getFullYear(),0,0);
+  const day=Math.floor((now-start)/86400000);
+  return QUOTES[day % QUOTES.length];
+}
+
 function showWelcome(){
   const has=loadP();
-  const QUOTE="The will to win means nothing without the will to prepare.";
-  const ATTR="— Des Williams";
+  const dq=getDailyQuote();
+
   sc.innerHTML=`
     <div class="welcome">
 
-      <!-- Logo — first to pop in -->
-      <div class="p0 pop"><div class="logo-ring"><img src="${LOGO}" alt="SmartCrick AI"/></div></div>
-
-      <!-- Tag — letter-spacing bloom -->
-      <p class="w-tag tag-pop p1">AI-Powered &nbsp;·&nbsp; Elite Cricket Training</p>
-
-      <!-- Main title — big spring entrance -->
-      <h1 class="w-title p2 pop">Welcome to<br>SmartCrick AI</h1>
-
-      <!-- Motivational quote card -->
-      <div class="w-quote-wrap p3 quote-pop">
+      <!-- Motivational quote — ABOVE title, fades in first -->
+      <div class="w-quote-wrap p0 pop">
         <p class="w-quote">
-          ${QUOTE}
-          <strong>${ATTR}</strong>
+          &ldquo;${dq.q}&rdquo;
+          <strong>&mdash;&nbsp;${dq.a}</strong>
         </p>
       </div>
+
+      <!-- Logo -->
+      <div class="p1 pop"><div class="logo-ring"><img src="${LOGO}" alt="SmartCrick AI"/></div></div>
+
+      <!-- Tag -->
+      <p class="w-tag tag-pop p2">AI-Powered &nbsp;·&nbsp; Elite Cricket Training</p>
+
+      <!-- Title -->
+      <h1 class="w-title p3 pop">Welcome to<br>SmartCrick AI</h1>
 
       <!-- Stat pills -->
       <div class="w-stats p4 pop">
@@ -514,7 +584,7 @@ function showWelcome(){
         </span>
         <span class="w-stat">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Takes 3 minutes
+          3 minutes
         </span>
         <span class="w-stat">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -522,28 +592,39 @@ function showWelcome(){
         </span>
       </div>
 
-      <!-- Primary CTA or resume card -->
+      <!-- CTA -->
       ${has&&qi>0?`
         <div class="resume-card p5 pop">
-          <p>Welcome back, <strong>${userName}</strong>! You're on question <strong>${qi+1}&thinsp;/&thinsp;${TOTAL}</strong>. Pick up where you left off?</p>
+          <p>Welcome back, <strong>${userName}</strong>! You're on question <strong>${qi+1}&thinsp;/&thinsp;${TOTAL}</strong>.</p>
           <div class="resume-btns">
-            <button class="btn-r" id="bc">Continue &nbsp;${AR}</button>
+            <button class="btn-r" id="bc">Pick up where I left off ${AR}</button>
             <button class="btn-f" id="bf">Start fresh</button>
           </div>
         </div>
       `:`
-        <div class="p5 pop" style="margin-top:4px">
-          <button class="cta" id="bg">
-            Begin My Journey &nbsp;${AR}
-          </button>
+        <div class="p5 pop" style="margin-top:8px">
+          <button class="cta" id="bg">Begin My Journey &nbsp;${AR}</button>
         </div>
+        <p class="w-hint p6 pop">Takes about 3 minutes &nbsp;·&nbsp; No signup needed</p>
       `}
 
     </div>`;
+
+  /* Attach listeners after DOM renders */
   const bb=document.getElementById("bg");
-  if(bb)bb.addEventListener("click",()=>{clearP();qi=0;answers={};userName="";userEmail="";userPhone="";goTo(showName)});
-  const bc=document.getElementById("bc");if(bc)bc.addEventListener("click",()=>goTo(showQuiz));
-  const bf=document.getElementById("bf");if(bf)bf.addEventListener("click",()=>{clearP();qi=0;answers={};userName="";userEmail="";userPhone="";goTo(showName)});
+  if(bb) bb.addEventListener("click",()=>{
+    if(busy) return;
+    clearP(); qi=0; answers={}; userName=""; userEmail=""; userPhone="";
+    goTo(showName);
+  });
+  const bc=document.getElementById("bc");
+  if(bc) bc.addEventListener("click",()=>{ if(!busy) goTo(showQuiz); });
+  const bf=document.getElementById("bf");
+  if(bf) bf.addEventListener("click",()=>{
+    if(busy) return;
+    clearP(); qi=0; answers={}; userName=""; userEmail=""; userPhone="";
+    goTo(showName);
+  });
 }
 
 /* ══════════════════════════════════════════════════════════════
